@@ -19,7 +19,7 @@ class MockResponse<T> extends Mock implements Response<T> {}
 class MockResponseInterceptorHandler extends Mock
     implements ResponseInterceptorHandler {}
 
-class MockDioError extends Mock implements DioError {}
+class MockDioError extends Mock implements DioException {}
 
 class MockErrorInterceptorHandler extends Mock
     implements ErrorInterceptorHandler {}
@@ -30,7 +30,7 @@ class FakeRequestOptions extends Fake implements RequestOptions {}
 
 class FakeResponse<T> extends Fake implements Response<T> {}
 
-class FakeDioError extends Fake implements DioError {}
+class FakeDioError extends Fake implements DioException {}
 
 Future<OAuth2Token> emptyRefreshToken(OAuth2Token? _, Dio __) async {
   return MockToken();
@@ -347,7 +347,7 @@ void main() {
         await fresh.onResponse(response, responseHandler);
         final result = verify(() => responseHandler.reject(captureAny()))
           ..called(1);
-        final actual = result.captured.first as DioError;
+        final actual = result.captured.first as DioException;
         await expectLater(
           fresh.authenticationStatus,
           emitsInOrder(const <AuthenticationStatus>[
@@ -428,7 +428,7 @@ void main() {
         when(() => error.response).thenReturn(response);
         await fresh.onError(error, errorHandler);
         final result = verify(() => errorHandler.next(captureAny()))..called(1);
-        expect(result.captured.first, isA<DioError>());
+        expect(result.captured.first, isA<DioException>());
       });
 
       test('returns error when error is RevokeTokenException', () async {
